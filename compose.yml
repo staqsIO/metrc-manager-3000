@@ -1,0 +1,101 @@
+name: metrc-formul8-os
+
+x-platform: &platform
+  image: metrc-formul8-os-platform:local
+  build:
+    context: ..
+    dockerfile: metrc-formul8-os-platform/Dockerfile
+    args:
+      NEXT_PUBLIC_BRAND_NAME: ${BRAND_NAME:-Formul8}
+      NEXT_PUBLIC_BRAND_LOGO_URL: ${BRAND_LOGO_URL:-/brand/logo.svg}
+  env_file: [{ path: .env, required: false }]
+  environment:
+    DATABASE_URL: postgresql://metrc:${POSTGRES_PASSWORD:?run scripts/setup.sh}@postgres:5432/metrc
+    NEXTAUTH_URL: ${APP_URL:-http://localhost:3000}
+    REDIS_URL: ${REDIS_URL:-}
+    # PORT in .env is the HOST port; the container always listens on 3000.
+    PORT: "3000"
+  restart: unless-stopped
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: metrc
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?run scripts/setup.sh}
+      POSTGRES_DB: metrc
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U metrc -d metrc"]
+      interval: 5s
+      retries: 20
+    restart: unless-stopped
+
+  migrate:
+    <<: *platform
+    command: ["migrate"]
+    healthcheck: { disable: true }
+    restart: "no"
+    depends_on:
+      postgres: { condition: service_healthy }
+
+  web:
+    <<: *platform
+    command: ["web"]
+    ports: ["${BIND_ADDRESS:-0.0.0.0}:${PORT:-3000}:3000"]
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+
+  cron:
+    <<: *platform
+    command: ["cron"]
+    healthcheck: { disable: true }
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+
+  metrc-mcp:
+    profiles: [mcp]
+    image: metrc-formul8-os-mcp:local
+    build: { context: ../metrc-formul8-os-mcp }
+    # Least privilege: only what the MCP reads, no platform secrets.
+    environment:
+      PORT: "8080"
+      METRC_API_URL: ${METRC_API_URL:-https://sandbox-api-co.metrc.com}
+      METRC_VENDOR_API_KEY: ${METRC_VENDOR_API_KEY:-}
+      METRC_USER_API_KEY: ${METRC_USER_API_KEY:-}
+      MCP_API_KEY: ${METRC_MCP_API_KEY:-}
+      ALLOWED_ORIGINS: ${MCP_ALLOWED_ORIGINS:-}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      OPENROUTER_MODEL: ${OPENROUTER_MODEL:-openai/gpt-4o}
+      OPENROUTER_KEY_URL: ${OPENROUTER_KEY_URL:-}
+      OPENROUTER_KEY_TOKEN: ${OPENROUTER_KEY_TOKEN:-}
+    restart: unless-stopped
+
+  ollama:
+    profiles: [ollama]
+    image: ollama/ollama:latest
+    volumes: [ollama:/root/.ollama]
+    restart: unless-stopped
+
+  redis:
+    profiles: [cache]
+    image: redis:7-alpine
+    restart: unless-stopped
+
+  keyservice:
+    profiles: [keyservice]
+    image: metrc-formul8-os-keyservice:local
+    build: { context: ../metrc-formul8-os-keyservice }
+    environment:
+      PORT: "3001"
+      KEY_SERVICE_API_KEY: ${KEY_SERVICE_API_KEY:-}
+      KEYSERVICE_ENCRYPTION_KEY: ${KEYSERVICE_ENCRYPTION_KEY:-}
+      KEYSERVICE_DATABASE_URL: postgresql://metrc:${POSTGRES_PASSWORD:?run scripts/setup.sh}@postgres:5432/keyservice
+      ALLOWED_ORIGINS: ${KEYSERVICE_ALLOWED_ORIGINS:-}
+    depends_on:
+      postgres: { condition: service_healthy }
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  ollama:

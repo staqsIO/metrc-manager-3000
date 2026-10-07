@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+echo "docker $*" >> "$STUB_LOG"
+case "$*" in
+  "compose version"*) [ -n "${STUB_NO_COMPOSE:-}" ] && exit 1; echo "Docker Compose version v${STUB_COMPOSE_VERSION:-2.29.0}" ;;
+  *"create-admin --check"*) exit "${STUB_ADMIN_CHECK:-3}" ;;
+esac
+exit 0

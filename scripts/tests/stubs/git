@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+echo "git $*" >> "$STUB_LOG"
+if [ "$1" = "clone" ]; then mkdir -p "${@: -1}/.git"; fi
+if [ "$1" = "-C" ] && [ "$3" = "status" ]; then cat "${2}/.stub-status" 2>/dev/null || true; fi
+exit 0

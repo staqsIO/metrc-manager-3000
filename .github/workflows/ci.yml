@@ -1,0 +1,38 @@
+name: ci
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  scripts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: gitleaks
+        run: docker run --rm -v "$PWD:/repo" ghcr.io/gitleaks/gitleaks:v8.30.1 dir /repo --no-banner --redact --gitleaks-ignore-path /repo/.gitleaksignore
+      - name: shellcheck
+        run: docker run --rm -v "$PWD:/mnt" -w /mnt koalaman/shellcheck:stable scripts/*.sh scripts/lib/*.sh
+      - run: bash scripts/tests/scrub-check.test.sh
+      - run: bash scripts/tests/setup.test.sh
+      - run: bash scripts/tests/install.test.sh
+      - run: bash scripts/tests/docs.test.sh
+  smoke:
+    runs-on: ubuntu-latest
+    needs: scripts
+    steps:
+      - uses: actions/checkout@v4
+        with: { path: metrc-formul8-os }
+      # setup.sh clones the sibling repos over https from the repository owner.
+      # While those repos are private this job needs a token with read access
+      # (e.g. a git url.insteadOf rewrite using a secret) or it fails until they are public.
+      - name: Smoke test (fresh install)
+        working-directory: metrc-formul8-os
+        env: { GITHUB_ORG: "${{ github.repository_owner }}" }
+        run: SMOKE_DOWN=1 bash scripts/smoke.sh --https --profiles mcp,keyservice
+      - name: Compose config test (needs the cloned siblings)
+        working-directory: metrc-formul8-os
+        run: bash scripts/tests/compose.test.sh
+      - name: Logs on failure
+        if: failure()
+        working-directory: metrc-formul8-os
+        run: docker compose logs --no-color | tail -300

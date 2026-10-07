@@ -1,0 +1,4 @@
+scripts/scrub-banned.local.txt
+.env
+.env.*
+!.env.example

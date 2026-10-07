@@ -1,0 +1,14 @@
+# Banned-string patterns for scrub-check.sh
+#
+# This file shows the format for scripts/scrub-banned.local.txt.
+# Create the real list by copying this file to scrub-banned.local.txt
+# and adding your organization's banned patterns (customer names, internal
+# domains, leaked keys, etc.). Matching is case-insensitive for fixed strings.
+# Lines starting with # are comments; blank lines are ignored.
+#
+# For automated scanning, set SCRUB_BANNED=/path/to/list before calling scrub-check.sh
+#
+# Example patterns (replace with your own):
+example-customer-name
+internal.example.com
+/home/your-user
