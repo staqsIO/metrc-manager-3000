@@ -1,12 +1,15 @@
+# Fallback project name for installs made before the rename to METRC Manager 3000: it prefixes their
+# pgdata volume, so changing it would start them on an empty database. New installs set
+# COMPOSE_PROJECT_NAME=metrc-manager-3000 in .env, which takes precedence.
 name: metrc-formul8-os
 
 x-platform: &platform
-  image: metrc-formul8-os-platform:local
+  image: metrc-manager-3000-platform:local
   build:
     context: ..
-    dockerfile: metrc-formul8-os-platform/Dockerfile
+    dockerfile: metrc-manager-3000-platform/Dockerfile
     args:
-      NEXT_PUBLIC_BRAND_NAME: ${BRAND_NAME:-Formul8}
+      NEXT_PUBLIC_BRAND_NAME: ${BRAND_NAME:-METRC Manager 3000}
       NEXT_PUBLIC_BRAND_LOGO_URL: ${BRAND_LOGO_URL:-/brand/logo.svg}
   env_file: [{ path: .env, required: false }]
   environment:
@@ -55,8 +58,8 @@ services:
 
   metrc-mcp:
     profiles: [mcp]
-    image: metrc-formul8-os-mcp:local
-    build: { context: ../metrc-formul8-os-mcp }
+    image: metrc-manager-3000-mcp:local
+    build: { context: ../metrc-manager-3000-mcp }
     # Least privilege: only what the MCP reads, no platform secrets.
     environment:
       PORT: "8080"
@@ -84,8 +87,8 @@ services:
 
   keyservice:
     profiles: [keyservice]
-    image: metrc-formul8-os-keyservice:local
-    build: { context: ../metrc-formul8-os-keyservice }
+    image: metrc-manager-3000-keyservice:local
+    build: { context: ../metrc-manager-3000-keyservice }
     environment:
       PORT: "3001"
       KEY_SERVICE_API_KEY: ${KEY_SERVICE_API_KEY:-}
