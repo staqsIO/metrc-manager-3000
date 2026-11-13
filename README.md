@@ -120,7 +120,7 @@ METRC Manager 3000 is created by three organizations:
 <table>
 <tr>
   <td align="center"><a href="https://github.com/staqsIO"><img src="https://github.com/staqsIO.png" width="64" alt="Staqs"/></a><br/><a href="https://github.com/staqsIO"><b>Staqs</b></a><br/><a href="https://staqs.io">staqs.io</a></td>
-  <td align="center"><a href="https://github.com/waevtech"><img src="https://github.com/waevtech.png" width="64" alt="Waev Tech"/></a><br/><a href="https://github.com/waevtech"><b>Waev Tech</b></a></td>
+  <td align="center"><a href="https://github.com/waevtech"><img src="https://github.com/waevtech.png" width="64" alt="Waev Tech"/></a><br/><a href="https://github.com/waevtech"><b>Waev Tech</b></a><br/><a href="https://waevtech.com/">waevtech.com</a></td>
   <td align="center"><a href="https://github.com/UMB-Advisors"><img src="https://github.com/UMB-Advisors.png" width="64" alt="UMB Advisors"/></a><br/><a href="https://github.com/UMB-Advisors"><b>UMB Advisors</b></a><br/><a href="https://umbadvisors.com">umbadvisors.com</a></td>
 </tr>
 </table>
