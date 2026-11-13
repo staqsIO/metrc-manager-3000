@@ -8,18 +8,18 @@ This repo holds the Docker Compose stack, setup scripts and documentation. The
 code lives in sibling repositories checked out next to it (setup.sh clones
 them):
 
-- [metrc-formul8-os-platform](https://github.com/staqsIO/metrc-formul8-os-platform): web app, sync jobs
-- [metrc-formul8-os-client](https://github.com/staqsIO/metrc-formul8-os-client): METRC API client
-- [metrc-formul8-os-mcp](https://github.com/staqsIO/metrc-formul8-os-mcp): MCP server
-- [metrc-formul8-os-keyservice](https://github.com/staqsIO/metrc-formul8-os-keyservice): OpenRouter key service
+- [metrc-manager-3000-platform](https://github.com/staqsIO/metrc-manager-3000-platform): web app, sync jobs
+- [metrc-manager-3000-client](https://github.com/staqsIO/metrc-manager-3000-client): METRC API client
+- [metrc-manager-3000-mcp](https://github.com/staqsIO/metrc-manager-3000-mcp): MCP server
+- [metrc-manager-3000-keyservice](https://github.com/staqsIO/metrc-manager-3000-keyservice): OpenRouter key service
 
 ## Local development
 
 Use Node 22 LTS for the sibling repositories. Each README has its own setup
-steps: [platform](https://github.com/staqsIO/metrc-formul8-os-platform#develop-locally),
-[client](https://github.com/staqsIO/metrc-formul8-os-client#development),
-[mcp](https://github.com/staqsIO/metrc-formul8-os-mcp),
-[keyservice](https://github.com/staqsIO/metrc-formul8-os-keyservice#development).
+steps: [platform](https://github.com/staqsIO/metrc-manager-3000-platform#develop-locally),
+[client](https://github.com/staqsIO/metrc-manager-3000-client#development),
+[mcp](https://github.com/staqsIO/metrc-manager-3000-mcp),
+[keyservice](https://github.com/staqsIO/metrc-manager-3000-keyservice#development).
 
 ## Tests
 

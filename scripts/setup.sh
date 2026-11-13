@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Installs and starts Metrc-Formul8-OS. Safe to re-run: never overwrites existing secrets.
+# Installs and starts METRC Manager 3000. Safe to re-run: never overwrites existing secrets.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -9,7 +9,7 @@ ENV_FILE="$ROOT/.env"
 # shellcheck disable=SC1091
 . "$ROOT/scripts/lib/env.sh"
 
-REPOS=(metrc-formul8-os-platform metrc-formul8-os-client metrc-formul8-os-mcp metrc-formul8-os-keyservice)
+REPOS=(metrc-manager-3000-platform metrc-manager-3000-client metrc-manager-3000-mcp metrc-manager-3000-keyservice)
 INTERACTIVE=1; UPDATE=0; HTTPS=0; START=1; PROFILES=""; PROFILES_SET=0
 
 usage() { echo "Usage: scripts/setup.sh [--non-interactive] [--update] [--https] [--profiles mcp,ollama,cache,keyservice] [--no-start]"; }
@@ -63,6 +63,9 @@ if [ "$UPDATE" = 1 ]; then
 fi
 for repo in "${REPOS[@]}"; do
   dir="$WS/$repo"
+  # Installs made before the rename have metrc-formul8-os-* folders; move them rather than clone again.
+  old="$WS/metrc-formul8-os-${repo#metrc-manager-3000-}"
+  if [ ! -e "$dir" ] && [ -d "$old" ]; then say "Moving ${old##*/} to $repo"; mv "$old" "$dir"; fi
   if [ ! -d "$dir" ]; then
     if [ "$HTTPS" = 1 ]; then url="https://github.com/$GITHUB_ORG/$repo.git"; else url="git@github.com:$GITHUB_ORG/$repo.git"; fi
     say "Cloning $repo"
@@ -107,6 +110,8 @@ has mcp || reset_default METRC_MCP_URL "http://metrc-mcp:8080"
 has ollama || reset_default OLLAMA_BASE_URL "http://ollama:11434"
 has cache || reset_default REDIS_URL "redis://redis:6379"
 has keyservice || reset_default KEY_SERVICE_URL "http://keyservice:3001"
+# Before the rename .env.example set BRAND_NAME=Formul8; clear it so the new default applies.
+reset_default BRAND_NAME "Formul8"
 if has mcp; then env_set "$ENV_FILE" METRC_MCP_URL "http://metrc-mcp:8080"; env_set_if_empty "$ENV_FILE" METRC_MCP_API_KEY "$(rand 24)"; fi
 if has ollama; then env_set_if_empty "$ENV_FILE" OLLAMA_BASE_URL "http://ollama:11434"; fi
 if has cache; then env_set "$ENV_FILE" REDIS_URL "redis://redis:6379"; fi
@@ -173,7 +178,7 @@ if [ "$check" = 3 ]; then
   fi
 fi
 
-say "Metrc-Formul8-OS is running at ${APP_URL_V:-http://localhost:3000}"
+say "METRC Manager 3000 is running at ${APP_URL_V:-http://localhost:3000}"
 [ -z "${ADMIN_CREATED:-}" ] || echo "    Sign in as ${ADMIN_CREATED}"
 echo "    Configure AI providers: ${APP_URL_V:-http://localhost:3000}/admin/llm-providers"
 echo "    Logs: docker compose logs -f web    Stop: docker compose down"

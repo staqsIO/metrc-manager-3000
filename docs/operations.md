@@ -6,7 +6,11 @@
 git pull --ff-only && scripts/setup.sh --update
 ```
 
-Run it from the root repo folder (`metrc-formul8-os/metrc-formul8-os`). `setup.sh` rebuilds and restarts the stack itself, so no separate `docker compose up` is needed. `--update` also pulls the root repo and the sibling repositories that are clean git checkouts (it skips any with local changes) and never overwrites existing secrets. Migrations run automatically on start.
+Run it from the root repo folder (`metrc-manager-3000/metrc-manager-3000`, or `metrc-formul8-os/metrc-formul8-os` for an install made before the rename). `setup.sh` rebuilds and restarts the stack itself, so no separate `docker compose up` is needed. `--update` also pulls the root repo and the sibling repositories that are clean git checkouts (it skips any with local changes) and never overwrites existing secrets. Migrations run automatically on start.
+
+### Upgrading from Metrc-Formul8-OS
+
+The project was renamed to METRC Manager 3000. Upgrade with the same two commands above: `git pull` first, so the new `setup.sh` runs. It moves the sibling folders to their new names (`metrc-formul8-os-platform` becomes `metrc-manager-3000-platform`, and so on) and clears `BRAND_NAME` if it still holds the old default. Your install keeps its folder and its Docker Compose project name, so the database volume stays in use. Running `scripts/setup.sh --update` without the `git pull` first runs the old script, which fails at the build step without touching your data; run the two commands above to finish.
 
 ## Backup and restore
 

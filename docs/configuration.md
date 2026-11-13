@@ -7,6 +7,7 @@ All settings live in `.env` (created by `scripts/setup.sh`). Apply changes with 
 | Variable | Required | Default | Description |
 |---|---|---|---|
 | `COMPOSE_PROFILES` | no | empty | Comma list of optional services started by `docker compose up`: mcp, ollama, cache, keyservice. |
+| `COMPOSE_PROJECT_NAME` | no | `metrc-manager-3000` | Prefixes container and volume names. Never change it on an existing install: the stack would start on a new, empty database. Installs made before the rename have no value and use `metrc-formul8-os` from `compose.yml`. |
 | `GITHUB_ORG` | no | `staqsIO` | GitHub organization setup.sh clones sibling repositories from. |
 
 ## Required (setup.sh generates the secrets)
@@ -83,7 +84,7 @@ All settings live in `.env` (created by `scripts/setup.sh`). Apply changes with 
 
 | Variable | Required | Default | Description |
 |---|---|---|---|
-| `BRAND_NAME` | no | `Formul8` | Product name. Build-time: run `docker compose up -d --build` after changing. |
+| `BRAND_NAME` | no | `METRC Manager 3000` | Product name. Build-time: run `docker compose up -d --build` after changing. |
 | `BRAND_LOGO_URL` | no | empty | Logo URL. Build-time: rebuild after changing. |
 | `SUPPORT_EMAIL` | no | empty | Support address shown in the app and emails. |
 | `EMAIL_FROM` | no | empty | Sender address for emails. |
